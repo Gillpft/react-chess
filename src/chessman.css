@@ -1,0 +1,38 @@
+.chessmanBox{
+    height: 60px;
+    width: 60px;
+    border-radius: 50% 50%;
+    border: 2px rgba(0, 0, 0, 0.53) groove;
+    box-shadow: 2px 4px 0 rgba(0, 0, 0, 0.6)
+}
+.contentred {
+    color: rgb(80, 3, 3);
+    font-size: 30px;
+    text-shadow: 0 0 2px rgb(145, 2, 2);
+}
+.contentblack {
+    color: black;
+    font-size: 40px;
+}
+.bg {
+    background: rgb(252, 214, 148);
+    height:60px;
+    border-radius: 50% 50%;
+    text-align: center;
+    line-height: 60px;
+}
+.bg-blur {
+    float: left;
+    width: 60px;
+    background-repeat: no-repeat;
+    background-position: center;
+    background-size: cover;
+    filter: blur(5px);
+}
+.content-front {
+  position:absolute;
+  height:60px;
+  width: 60px;
+  line-height: 60px;
+  text-align: center;
+}

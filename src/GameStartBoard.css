@@ -25,21 +25,8 @@
     background-color: wheat;
     border: 0;
     outline:none;
+    
+}
+.undoButton:hover{
     box-shadow: 5px 5px 5px black;
-}
-.chessmanBox{
-    height: 60px;
-    width: 60px;
-    border-radius: 50% 50%;
-    border: 2px rgba(0, 0, 0, 0.53) groove;
-    box-shadow: 2px 4px 0 rgba(0, 0, 0, 0.6)
-}
-.contentred {
-    color: rgb(80, 3, 3);
-    font-size: 30px;
-    text-shadow: 0 0 2px rgb(145, 2, 2);
-}
-.contentblack {
-    color: black;
-    font-size: 40px;
 }

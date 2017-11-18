@@ -2,7 +2,6 @@ import * as React from 'react';
 
 import { Checkerboard } from './Checkerboard'
 import { Button } from './Button'
-import { Chessman } from './Chessman';
 
 import './GameStartBoard.css';
 
@@ -18,7 +17,7 @@ export class GameStartBoard extends React.Component<{}, typeof S> {
       <Button text='悔棋' className='undoButton' onclick={() => 1} />
     </div>
       <Checkerboard />
-      <Chessman content='contentred content-front' chessmantext='兵'/>
+      
     </div>
   }
 }

@@ -22,11 +22,13 @@
 .undoButton{
     width: 60px;
     height: 40px;
-    background-color: wheat;
+    font-size: 20px;
+    background-color: rgba(245, 222, 179, 0);
     border: 0;
     outline:none;
     
 }
 .undoButton:hover{
     box-shadow: 5px 5px 5px black;
+    background-color: rgba(245, 222, 179, 0.5);
 }

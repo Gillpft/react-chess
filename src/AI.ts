@@ -140,7 +140,7 @@ const diff = (board: number[][], x1: number, y1: number, x2: number, y2: number)
 //
 const 可以落点 = (board: number[][], x1: number, y1: number, x2: number, y2: number) => {
     return checkRange(x2, y2) &&
-        (board[y2][x2] == 0 || diff(board, x1, y1, x2, x2)) //结束点是空 或者是 对方棋子
+        (board[y2][x2] == 0 || diff(board, x1, y1, x2, y2)) //结束点是空 或者是 对方棋子
 }
 
 const 直走隔几个可以吃 = (n: number) => (board: number[][], x: number, y: number) => {

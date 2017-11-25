@@ -20,6 +20,18 @@ export class GameStartBoard extends React.Component<{}, typeof S> {
   }
 
   棋子点击 = (num: number, x: number, y: number) => {
+    if (this.state.点击的棋子的x == x && this.state.点击的棋子的y == y) {
+      this.setState({
+        点击的棋子的ID: 0,
+        点击的棋子的x: -1,
+        点击的棋子的y: -1
+      })
+      return
+    }
+    if (this.state.点击的棋子的ID != 0) {
+      this.空白处点击(x, y)
+      return
+    }
     this.setState({
       点击的棋子的ID: num,
       点击的棋子的x: x,
@@ -28,7 +40,7 @@ export class GameStartBoard extends React.Component<{}, typeof S> {
   }
 
   空白处点击 = (x: number, y: number) => {
-    if (this.state.点击的棋子的ID != 0 && 棋子规则(this.state.board, this.state.点击的棋子的x,this.state.点击的棋子的y,x,y) ) {
+    if (this.state.点击的棋子的ID != 0 && 棋子规则(this.state.board, this.state.点击的棋子的x, this.state.点击的棋子的y, x, y)) {
       const xx = this.state.board
       xx[this.state.点击的棋子的y][this.state.点击的棋子的x] = 0
       xx[y][x] = this.state.点击的棋子的ID

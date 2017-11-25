@@ -4,10 +4,10 @@ import { Button } from './Button'
 import { Chessman } from './Chessman'
 
 import './GameStartBoard.css'
-import { defaultBoard, chessmanTable } from './Data'
+import { startBoard, chessmanTable, 棋子规则 } from './AI'
 
 const S = {
-  board: defaultBoard,
+  board: startBoard,
   点击的棋子的ID: 0,
   点击的棋子的x: -1,
   点击的棋子的y: -1
@@ -28,11 +28,11 @@ export class GameStartBoard extends React.Component<{}, typeof S> {
   }
 
   空白处点击 = (x: number, y: number) => {
-    if(this.state.点击的棋子的ID!=0){
+    if (this.state.点击的棋子的ID != 0 && 棋子规则(this.state.board, this.state.点击的棋子的x,this.state.点击的棋子的y,x,y) ) {
       const xx = this.state.board
       xx[this.state.点击的棋子的y][this.state.点击的棋子的x] = 0
       xx[y][x] = this.state.点击的棋子的ID
-  
+
       this.setState({
         点击的棋子的ID: 0,
         点击的棋子的x: -1,
@@ -55,7 +55,7 @@ export class GameStartBoard extends React.Component<{}, typeof S> {
             return V.map((v, x) => {
               return v ?
                 <Chessman
-                  high={x==this.state.点击的棋子的x && y==this.state.点击的棋子的y}
+                  high={x == this.state.点击的棋子的x && y == this.state.点击的棋子的y}
                   key={x.toString() + '.' + y.toString()}
                   x={x * 59 + 10}
                   y={y * 53 + 9}

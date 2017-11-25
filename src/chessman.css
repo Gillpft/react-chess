@@ -4,7 +4,11 @@
     width: 50px;
     border-radius: 50% 50%;
     border: 2px rgba(0, 0, 0, 0.53) groove;
-    box-shadow: 2px 4px 0 rgba(0, 0, 0, 0.6)
+    cursor: default;
+    user-select: none;
+}
+.chessmanBox-high{
+    box-shadow: 2px 4px 0 #00000099;
 }
 .content {
     font-size: 30px;
@@ -31,4 +35,14 @@
   width: 50px;
   line-height: 50px;
   text-align: center;
+}
+.blank{
+    position: absolute;
+    height: 50px;
+    width: 50px;
+    border-radius: 50% 50%;
+    background: rgba(196, 68, 68, 0.1);
+    outline: none;
+    cursor: default;
+    user-select: none;
 }

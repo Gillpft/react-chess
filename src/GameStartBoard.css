@@ -32,3 +32,11 @@
     box-shadow: 5px 5px 5px black;
     background-color: rgba(245, 222, 179, 0.5);
 }
+.checkerboard{
+    height: 551px;
+    width: 551px;
+    display: flex;
+}
+.checkerboardImg{
+    box-shadow: 0 0 100px white;
+}

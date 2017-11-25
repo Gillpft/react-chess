@@ -1,8 +1,0 @@
-.checkerboard{
-    height: 551px;
-    width: 551px;
-    display: flex;
-}
-.checkerboardImg{
-    box-shadow: 0 0 100px white;
-}

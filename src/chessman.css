@@ -41,7 +41,7 @@
     height: 50px;
     width: 50px;
     border-radius: 50% 50%;
-    background: rgba(196, 68, 68, 0.1);
+    background: rgba(0, 0, 0, 0);
     outline: none;
     cursor: default;
     user-select: none;

@@ -360,7 +360,7 @@ export const 棋子规则 = (board: number[][], x1: number, y1: number, x2: numb
     const id2 = board[y2][x2]
 
     //结束点必须是空 或者是别人的棋子
-    if (id2 == 0 || ((id2 >= 8 && id1 <= 7) || (id1 >= 8 && id2 <= 7))) {
+    if (id2 == 0 || diff(board, x1, y1, x2, y2)) {
         if (id1 == 1 || id1 == 8) {
             return 车所有走法(board, x1, y1).find(v => v.x == x2 && v.y == y2) != null
         }
@@ -383,7 +383,5 @@ export const 棋子规则 = (board: number[][], x1: number, y1: number, x2: numb
             return 兵所有走法(board, x1, y1).find(v => v.x == x2 && v.y == y2) != null
         }
     }
-
-
     return false
 }

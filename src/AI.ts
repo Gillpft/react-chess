@@ -330,6 +330,25 @@ export const 将所有走法 = (board: number[][], x: number, y: number) => {
 
 export const 兵所有走法 = (board: number[][], x: number, y: number) => {
     let arr: { x: number, y: number }[] = []
+    if (board[y][x] == 14) {//红
+        if (可以落点(board, x, y, x, y - 1))
+            arr.push({ x: x, y: y - 1 })
+        if (y <= 4) {
+            if (可以落点(board, x, y, x - 1, y))
+                arr.push({ x: x - 1, y: y })
+            if (可以落点(board, x, y, x + 1, y))
+                arr.push({ x: x + 1, y: y })
+        }
+    } else {
+        if (可以落点(board, x, y, x, y + 1))
+            arr.push({ x: x, y: y + 1 })
+        if (y >= 5) {
+            if (可以落点(board, x, y, x - 1, y))
+                arr.push({ x: x - 1, y: y })
+            if (可以落点(board, x, y, x + 1, y))
+                arr.push({ x: x + 1, y: y })
+        }
+    }
     return arr
 }
 

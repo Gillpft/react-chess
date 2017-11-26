@@ -382,7 +382,13 @@ const fDic: { [id: number]: (board: number[][], coord: Coord) => Coord[] } = {
 }
 
 //黑方
-export const getStep = (board: number[][], depth = 1) => {
+export const getStep = (board: number[][], f: (ft: FromTo) => void) => {
+    setTimeout(() => {
+        f(getStep2(board).ft)
+    }, 0);
+}
+
+const getStep2 = (board: number[][], depth = 1) => {
     if (depth == 5) {
         return { ft: {} as FromTo, v: evaluate(board) }
     }
@@ -399,7 +405,7 @@ export const getStep = (board: number[][], depth = 1) => {
         impureSetID(board, ft.from, 0)
         impureSetID(board, ft.to, fromID)
 
-        let xxx = getStep(board, depth + 1)
+        let xxx = getStep2(board, depth + 1)
         if (isBlack && ret.v < xxx.v) {
             //max
             ret.v = xxx.v

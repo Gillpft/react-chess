@@ -37,19 +37,27 @@ export class GameStartBoard extends React.Component<{}, typeof S> {
         this.state.board[this.state.点击的棋子的y][this.state.点击的棋子的x] = 0
         this.state.board[y][x] = this.state.点击的棋子的ID
 
-        let obj = getStep(this.state.board)
-
-        let fID = this.state.board[obj.ft.from.y][obj.ft.from.x]
-        this.state.board[obj.ft.from.y][obj.ft.from.x] = 0
-        this.state.board[obj.ft.to.y][obj.ft.to.x] = fID
-
         this.setState({
           点击的棋子的ID: 0,
           点击的棋子的x: -1,
           点击的棋子的y: -1,
-          黑色的棋子的x: obj.ft.to.x,
-          黑色的棋子的y: obj.ft.to.y,
         })
+
+        getStep(this.state.board, ft => {
+          let fID = this.state.board[ft.from.y][ft.from.x]
+          this.state.board[ft.from.y][ft.from.x] = 0
+          this.state.board[ft.to.y][ft.to.x] = fID
+
+          this.setState({
+            点击的棋子的ID: 0,
+            点击的棋子的x: -1,
+            点击的棋子的y: -1,
+            黑色的棋子的x: ft.to.x,
+            黑色的棋子的y: ft.to.y,
+          })
+        })
+
+
       }
 
     }

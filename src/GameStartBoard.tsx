@@ -10,7 +10,9 @@ const S = {
   board: startBoard,
   点击的棋子的ID: 0,
   点击的棋子的x: -1,
-  点击的棋子的y: -1
+  点击的棋子的y: -1,
+  黑色的棋子的x:-1,
+  黑色的棋子的y:-1
 }
 
 export class GameStartBoard extends React.Component<{}, typeof S> {
@@ -24,7 +26,9 @@ export class GameStartBoard extends React.Component<{}, typeof S> {
       this.setState({
         点击的棋子的ID: id,
         点击的棋子的x: x,
-        点击的棋子的y: y
+        点击的棋子的y: y,
+        黑色的棋子的x:-1,
+        黑色的棋子的y:-1,
       })
     } else if (this.state.点击的棋子的ID != 0) {
 
@@ -39,12 +43,12 @@ export class GameStartBoard extends React.Component<{}, typeof S> {
         this.state.board[obj.ft.from.y][obj.ft.from.x] = 0
         this.state.board[obj.ft.to.y][obj.ft.to.x] = fID
 
-
-
         this.setState({
           点击的棋子的ID: 0,
           点击的棋子的x: -1,
-          点击的棋子的y: -1
+          点击的棋子的y: -1,
+          黑色的棋子的x:obj.ft.to.x,
+          黑色的棋子的y:obj.ft.to.y,
         })
       }
 
@@ -64,7 +68,7 @@ export class GameStartBoard extends React.Component<{}, typeof S> {
             return V.map((v, x) => {
               return v ?
                 <Chessman
-                  high={x == this.state.点击的棋子的x && y == this.state.点击的棋子的y}
+                  high={(x == this.state.点击的棋子的x && y == this.state.点击的棋子的y)||(x == this.state.黑色的棋子的x && y == this.state.黑色的棋子的y) }
                   key={x.toString() + '.' + y.toString()}
                   x={x * 59 + 10}
                   y={y * 53 + 9}

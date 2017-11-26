@@ -43,9 +43,7 @@ export class GameStartBoard extends React.Component<{}, typeof S> {
           redChessmanY: -1,
           blackChessmanX: -1,
           blackChessmanY: -1
-        })
-
-        getStep(this.state.board, ft => {
+        }, () => getStep(this.state.board, ft => {
           let fID = this.state.board[ft.from.y][ft.from.x]
           this.state.board[ft.from.y][ft.from.x] = 0
           this.state.board[ft.to.y][ft.to.x] = fID
@@ -57,7 +55,9 @@ export class GameStartBoard extends React.Component<{}, typeof S> {
             blackChessmanX: ft.to.x,
             blackChessmanY: ft.to.y,
           })
-        })
+        }))
+
+
 
 
       }
@@ -67,28 +67,28 @@ export class GameStartBoard extends React.Component<{}, typeof S> {
 
   render() {
     return <div className='gameStartBoard'>
-        <div className='checkerboard'>
-          <img className='checkerboardImg' src='Checkerboard.png'></img>
-          {this.state.board.map((V, y) => {
-            return V.map((v, x) => {
-              return v ?
-                <Chessman
-                  high={(x == this.state.redChessmanX && y == this.state.redChessmanY) || (x == this.state.blackChessmanX && y == this.state.blackChessmanY)}
-                  key={x.toString() + '.' + y.toString()}
-                  x={x * 59 + 10}
-                  y={y * 58 + 9}
-                  color={chessmanTable[v].color}
-                  name={chessmanTable[v].name}
-                  onClick={() => this.onClick(v, x, y)} />
-                : <Chessman
-                  high={false}
-                  key={x.toString() + '.' + y.toString()}
-                  x={x * 59 + 10}
-                  y={y * 58 + 9}
-                  onClick={() => this.onClick(v, x, y)} />
-            })
-          })}
-        </div>
+      <div className='checkerboard'>
+        <img className='checkerboardImg' src='Checkerboard.png'></img>
+        {this.state.board.map((V, y) => {
+          return V.map((v, x) => {
+            return v ?
+              <Chessman
+                high={(x == this.state.redChessmanX && y == this.state.redChessmanY) || (x == this.state.blackChessmanX && y == this.state.blackChessmanY)}
+                key={x.toString() + '.' + y.toString()}
+                x={x * 59 + 10}
+                y={y * 58 + 9}
+                color={chessmanTable[v].color}
+                name={chessmanTable[v].name}
+                onClick={() => this.onClick(v, x, y)} />
+              : <Chessman
+                high={false}
+                key={x.toString() + '.' + y.toString()}
+                x={x * 59 + 10}
+                y={y * 58 + 9}
+                onClick={() => this.onClick(v, x, y)} />
+          })
+        })}
       </div>
+    </div>
   }
 }

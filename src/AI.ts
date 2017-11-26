@@ -120,6 +120,9 @@ export const startBoard = [
     [8, 9, 10, 11, 12, 11, 10, 9, 8]
 ]
 
+const isNone = (id: number) => id == 0
+const isRed = (id: number) => id != 0 && id >= 8
+const isBlack = (id: number) => id != 0 && id <= 7
 
 //检查是否超出范围
 const checkRange = (x: number, y: number) =>
@@ -132,7 +135,7 @@ const check田 = (x: number, y: number) =>
 const diff = (board: number[][], x1: number, y1: number, x2: number, y2: number) => {
     const id1 = board[y1][x1]
     const id2 = board[y2][x2]
-    return id1 != 0 && id2 != 0 && ((id2 >= 8 && id1 <= 7) || (id1 >= 8 && id2 <= 7))
+    return ((isRed(id2) && isBlack(id1)) || (isRed(id1) && isBlack(id2)))
 }
 
 //结束点是空 或者是 对方棋子
@@ -341,7 +344,7 @@ export const 兵所有走法 = (board: number[][], x: number, y: number) => {
 }
 
 
-const forEach = (board: number[][], f: (v: number, x: number, y: number) => void) => {
+const forEach = (board: number[][], f: (id: number, x: number, y: number) => void) => {
     for (let y = 0; y < board.length; y++) {
         for (let x = 0; x < board[y].length; x++) {
             f(board[y][x], x, y)
@@ -359,21 +362,37 @@ const fDic: { [id: number]: (board: number[][], x: number, y: number) => { x: nu
     7: 兵所有走法, 14: 兵所有走法
 }
 
+
+//评价函数  黑方分数
+const evaluate = (board: number[][]) => {
+    let v = 0
+    forEach(board, (v, x, y) => {
+        if (isBlack(v)) {
+            v += PRICE_TABLE[9 - y][x]//反转
+        }
+        if (isRed(v)) {
+            v -= PRICE_TABLE[y][x]
+        }
+    })
+    return v
+}
+
+
 //全部走法
 const all = (board: number[][], fx: 'red' | 'black') => {
     let arr: { x1: number, y1: number, x2: number, y2: number }[] = []
-    forEach(board, (v, x, y) => {
-        if (fx == 'red' && v >= 8) {
-            let a = fDic[v](board, x, y).map(v => ({ x1: x, y1: y, x2: v.x, y2: v.y }))
+    forEach(board, (id, x, y) => {
+        if (fx == 'red' && isRed(id)) {
+            let a = fDic[id](board, x, y).map(v => ({ x1: x, y1: y, x2: v.x, y2: v.y }))
             arr.push(...a)
         }
-        if (fx == 'black' && v <= 7) {
-            let a = fDic[v](board, x, y).map(v => ({ x1: x, y1: y, x2: v.x, y2: v.y }))
+        if (fx == 'black' && isBlack(id)) {
+            let a = fDic[id](board, x, y).map(v => ({ x1: x, y1: y, x2: v.x, y2: v.y }))
             arr.push(...a)
         }
     })
     return arr
 }
 
-export const 棋子规则 = (board: number[][], x1: number, y1: number, x2: number, y2: number) =>
+export const 可以走 = (board: number[][], x1: number, y1: number, x2: number, y2: number) =>
     all(board, 'red').find(v => v.x1 == x1 && v.y1 == y1 && v.x2 == x2 && v.y2 == y2) != null

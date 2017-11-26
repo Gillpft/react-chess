@@ -4,7 +4,7 @@ import { Button } from './Button'
 import { Chessman } from './Chessman'
 
 import './GameStartBoard.css'
-import { startBoard, chessmanTable, 棋子规则 } from './AI'
+import { startBoard, chessmanTable, 可以走 } from './AI'
 
 const S = {
   board: startBoard,
@@ -28,7 +28,7 @@ export class GameStartBoard extends React.Component<{}, typeof S> {
       })
     } else if (this.state.点击的棋子的ID != 0) {
 
-      let b = 棋子规则(this.state.board, this.state.点击的棋子的x, this.state.点击的棋子的y, x, y)
+      let b = 可以走(this.state.board, this.state.点击的棋子的x, this.state.点击的棋子的y, x, y)
       if (b) {
         this.state.board[this.state.点击的棋子的y][this.state.点击的棋子的x] = 0
         this.state.board[y][x] = this.state.点击的棋子的ID

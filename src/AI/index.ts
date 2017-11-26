@@ -382,17 +382,33 @@ const fDic: { [id: number]: (board: number[][], coord: Coord) => Coord[] } = {
 }
 
 //黑方
-const getStep = (board: number[][], depth: number) => {
-    let arr = all(board, 'black')
-    let ret = { ft: arr[0], v: 0 }
+export const getStep = (board: number[][], depth = 1) => {
+    if (depth == 5) {
+        return { ft: {} as FromTo, v: evaluate(board) }
+    }
+    let isBlack = depth % 2 == 1
+    let arr = all(board, isBlack ? 'black' : 'red')
+    let ret = { ft: arr[0], v: isBlack ? -Infinity : Infinity }
 
     for (let i = 0; i < arr.length; i++) {
         let ft = arr[i]
+
         //改变board
         let fromID = getID(board, ft.from)
         let toID = getID(board, ft.to)
         impureSetID(board, ft.from, 0)
         impureSetID(board, ft.to, fromID)
+
+        let xxx = getStep(board, depth + 1)
+        if (isBlack && ret.v < xxx.v) {
+            //max
+            ret.v = xxx.v
+            ret.ft = ft
+        } else if (isBlack == false && ret.v > xxx.v) {
+            //min
+            ret.v = xxx.v
+            ret.ft = ft
+        }
 
         //还原board
         impureSetID(board, ft.from, fromID)

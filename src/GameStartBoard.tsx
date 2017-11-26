@@ -4,7 +4,7 @@ import { Button } from './Button'
 import { Chessman } from './Chessman'
 
 import './GameStartBoard.css'
-import { startBoard, chessmanTable, 可以走 } from './AI'
+import { startBoard, chessmanTable, 可以走, getStep } from './AI'
 
 const S = {
   board: startBoard,
@@ -32,6 +32,15 @@ export class GameStartBoard extends React.Component<{}, typeof S> {
       if (b) {
         this.state.board[this.state.点击的棋子的y][this.state.点击的棋子的x] = 0
         this.state.board[y][x] = this.state.点击的棋子的ID
+
+        let obj = getStep(this.state.board)
+
+        let fID = this.state.board[obj.ft.from.y][obj.ft.from.x]
+        this.state.board[obj.ft.from.y][obj.ft.from.x] = 0
+        this.state.board[obj.ft.to.y][obj.ft.to.x] = fID
+
+
+
         this.setState({
           点击的棋子的ID: 0,
           点击的棋子的x: -1,

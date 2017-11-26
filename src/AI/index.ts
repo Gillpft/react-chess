@@ -126,37 +126,42 @@ export const startBoard = [
 const isNone = (id: number) => id == 0
 const isRed = (id: number) => id != 0 && id >= 8
 const isBlack = (id: number) => id != 0 && id <= 7
+const getID = (board: number[][], coord: Coord) => board[coord.y][coord.x]
 
-//检查是否超出范围
-const checkRange = (x: number, y: number) =>
-    x >= 0 && x < 9 && y >= 0 && y < 10
+const impureSetID = (board: number[][], coord: Coord, id: number) => board[coord.y][coord.x] = id
 
-const check田 = (x: number, y: number) =>
-    (x >= 3 && x <= 5) && ((y >= 0 && y <= 2) || (y >= 7 && y <= 9))
+const checkRange = (coord: Coord) =>
+    coord.x >= 0 && coord.x < 9 && coord.y >= 0 && coord.y < 10
+
+const check田 = (coord: Coord) =>
+    (coord.x >= 3 && coord.x <= 5)
+    &&
+    ((coord.y >= 0 && coord.y <= 2) || (coord.y >= 7 && coord.y <= 9))
 
 //对方棋子
 const diff = (board: number[][], ft: FromTo) => {
-    const id1 = board[ft.from.y][ft.from.x]
-    const id2 = board[ft.to.y][ft.to.x]
+    const id1 = getID(board, ft.from)
+    const id2 = getID(board, ft.to)
     return ((isRed(id2) && isBlack(id1)) || (isRed(id1) && isBlack(id2)))
 }
 
 //结束点是空 或者是 对方棋子
 const 可以落点 = (board: number[][], ft: FromTo) =>
-    checkRange(ft.to.x, ft.to.y) && (board[ft.to.y][ft.to.x] == 0 || diff(board, ft))
+    checkRange(ft.to) && (getID(board, ft.to) == 0 || diff(board, ft))
 
 
-const 直走隔几个可以吃 = (n: number) => (board: number[][], x: number, y: number) => {
-    let arr: { x: number, y: number }[] = []
+const 直走隔几个可以吃 = (n: number) => (board: number[][], from: Coord) => {
+    const { x, y } = from
+    let arr: Coord[] = []
     //左
     for (let i = x - 1, c = -1; i >= 0; i--) {
-        if (board[y][i] == 0) {
+        if (getID(board, { x: i, y }) == 0) {
             if (c == -1) arr.push({ x: i, y: y })
         }
         else {
             c++
             if (c == n) {
-                if (diff(board, { from: { x: x, y: y }, to: { x: i, y: y } }))
+                if (diff(board, { from, to: { x: i, y: y } }))
                     arr.push({ x: i, y: y })
                 break
             }
@@ -165,13 +170,13 @@ const 直走隔几个可以吃 = (n: number) => (board: number[][], x: number, y
 
     //右
     for (let i = x + 1, c = -1; i < 9; i++) {
-        if (board[y][i] == 0) {
+        if (getID(board, { x: i, y }) == 0) {
             if (c == -1) arr.push({ x: i, y: y })
         }
         else {
             c++
             if (c == n) {
-                if (diff(board, { from: { x, y }, to: { x: i, y: y } }))
+                if (diff(board, { from, to: { x: i, y: y } }))
                     arr.push({ x: i, y: y })
                 break
             }
@@ -180,13 +185,13 @@ const 直走隔几个可以吃 = (n: number) => (board: number[][], x: number, y
 
     //上
     for (let i = y - 1, c = -1; i >= 0; i--) {
-        if (board[i][x] == 0) {
+        if (getID(board, { x, y: i }) == 0) {
             if (c == -1) arr.push({ x: x, y: i })
         }
         else {
             c++
             if (c == n) {
-                if (diff(board, { from: { x, y }, to: { x, y: i } }))
+                if (diff(board, { from, to: { x, y: i } }))
                     arr.push({ x: x, y: i })
                 break
             }
@@ -195,13 +200,13 @@ const 直走隔几个可以吃 = (n: number) => (board: number[][], x: number, y
 
     //下
     for (let i = y + 1, c = -1; i < 10; i++) {
-        if (board[i][x] == 0) {
+        if (getID(board, { x, y: i }) == 0) {
             if (c == -1) arr.push({ x: x, y: i })
         }
         else {
             c++
             if (c == n) {
-                if (diff(board, { from: { x, y }, to: { x, y: i } }))
+                if (diff(board, { from, to: { x, y: i } }))
                     arr.push({ x: x, y: i })
                 break
             }
@@ -213,7 +218,7 @@ const 直走隔几个可以吃 = (n: number) => (board: number[][], x: number, y
 const 车所有走法 = 直走隔几个可以吃(0)
 const 炮所有走法 = 直走隔几个可以吃(1)
 
-export const 马所有走法 = (board: number[][], x: number, y: number) => {
+export const 马所有走法 = (board: number[][], from: Coord) => {
 
     const table = [
         { over: [1, 2], only0: [0, 1] },
@@ -226,28 +231,32 @@ export const 马所有走法 = (board: number[][], x: number, y: number) => {
         { over: [-2, -1], only0: [-1, 0] },
     ]
 
-    let arr: { x: number, y: number }[] = []
+    let arr: Coord[] = []
 
     for (let i = 0; i < table.length; i++) {
-        const overX = x + table[i].over[0]
-        const overY = y + table[i].over[1]
-        const onlyX = x + table[i].only0[0]
-        const onlyY = y + table[i].only0[1]
+        const to = {
+            x: from.x + table[i].over[0],
+            y: from.y + table[i].over[1]
+        }
+        const only = {
+            x: from.x + table[i].only0[0],
+            y: from.y + table[i].only0[1]
+        }
 
         if (
-            (checkRange(onlyX, onlyY) && board[onlyY][onlyX] == 0) //没有挡住
+            (checkRange(only) && getID(board, only) == 0) //没有挡住
             &&
-            可以落点(board, { from: { x, y }, to: { x: overX, y: overY } })
+            可以落点(board, { from, to })
         ) {
-            arr.push({ x: overX, y: overY })
+            arr.push(to)
         }
     }
 
     return arr
 }
 
-export const 相所有走法 = (board: number[][], x: number, y: number) => {
-    let arr: { x: number, y: number }[] = []
+export const 相所有走法 = (board: number[][], from: Coord) => {
+    let arr: Coord[] = []
 
     const table = [
         { over: [2, 2], only0: [1, 1] },
@@ -257,26 +266,30 @@ export const 相所有走法 = (board: number[][], x: number, y: number) => {
     ]
 
     for (let i = 0; i < table.length; i++) {
-        const overX = x + table[i].over[0]
-        const overY = y + table[i].over[1]
-        const onlyX = x + table[i].only0[0]
-        const onlyY = y + table[i].only0[1]
+        const to = {
+            x: from.x + table[i].over[0],
+            y: from.y + table[i].over[1]
+        }
+        const only = {
+            x: from.x + table[i].only0[0],
+            y: from.y + table[i].only0[1]
+        }
 
-        if ((y >= 5 && overY >= 5) || (y <= 4 && overY <= 4)) {//不能过河
+        if ((from.y >= 5 && to.y >= 5) || (from.y <= 4 && to.y <= 4)) {//不能过河
             if (
-                (checkRange(onlyX, onlyY) && board[onlyY][onlyX] == 0) //没有挡住
+                (checkRange(only) && getID(board, only) == 0) //没有挡住
                 &&
-                可以落点(board, { from: { x, y }, to: { x: overX, y: overY } }) //结束点是空 或者是 对方棋子
+                可以落点(board, { from, to }) //结束点是空 或者是 对方棋子
             ) {
-                arr.push({ x: overX, y: overY })
+                arr.push(to)
             }
         }
     }
     return arr
 }
 
-export const 士所有走法 = (board: number[][], x: number, y: number) => {
-    let arr: { x: number, y: number }[] = []
+export const 士所有走法 = (board: number[][], from: Coord) => {
+    let arr: Coord[] = []
 
     const table = [
         { over: [1, 1] },
@@ -286,11 +299,13 @@ export const 士所有走法 = (board: number[][], x: number, y: number) => {
     ]
 
     for (let i = 0; i < table.length; i++) {
-        const overX = x + table[i].over[0]
-        const overY = y + table[i].over[1]
+        const to = {
+            x: from.x + table[i].over[0],
+            y: from.y + table[i].over[1]
+        }
 
-        if (check田(overX, overY) && 可以落点(board, { from: { x, y }, to: { x: overX, y: overY } })) {
-            arr.push({ x: overX, y: overY })
+        if (check田(to) && 可以落点(board, { from, to })) {
+            arr.push(to)
         }
 
     }
@@ -298,8 +313,8 @@ export const 士所有走法 = (board: number[][], x: number, y: number) => {
     return arr
 }
 
-export const 将所有走法 = (board: number[][], x: number, y: number) => {
-    let arr: { x: number, y: number }[] = []
+export const 将所有走法 = (board: number[][], from: Coord) => {
+    let arr: Coord[] = []
 
     const table = [
         { over: [1, 0] },
@@ -309,37 +324,38 @@ export const 将所有走法 = (board: number[][], x: number, y: number) => {
     ]
 
     for (let i = 0; i < table.length; i++) {
-        const overX = x + table[i].over[0]
-        const overY = y + table[i].over[1]
-
-        if (check田(overX, overY) && (board[overY][overX] == 0 || diff(board, { from: { x, y }, to: { x: overX, y: overY } }))) {
-            arr.push({ x: overX, y: overY })
+        const to = {
+            x: from.x + table[i].over[0],
+            y: from.y + table[i].over[1]
         }
 
+        if (check田(to) && 可以落点(board, { from, to })) {
+            arr.push(to)
+        }
     }
-
     return arr
 }
 
 
-export const 兵所有走法 = (board: number[][], x: number, y: number) => {
-    let arr: { x: number, y: number }[] = []
+export const 兵所有走法 = (board: number[][], from: Coord) => {
+    const { x, y } = from
+    let arr: Coord[] = []
     if (board[y][x] == 14) {//红
-        if (可以落点(board, { from: { x, y }, to: { x, y: y - 1 } }))
+        if (可以落点(board, { from, to: { x, y: y - 1 } }))
             arr.push({ x: x, y: y - 1 })
         if (y <= 4) {
-            if (可以落点(board, { from: { x, y }, to: { x: x - 1, y: y } }))
+            if (可以落点(board, { from, to: { x: x - 1, y: y } }))
                 arr.push({ x: x - 1, y: y })
-            if (可以落点(board, { from: { x, y }, to: { x: x + 1, y: y } }))
+            if (可以落点(board, { from, to: { x: x + 1, y: y } }))
                 arr.push({ x: x + 1, y: y })
         }
     } else {
-        if (可以落点(board, { from: { x, y }, to: { x: x, y: y + 1 } }))
+        if (可以落点(board, { from, to: { x: x, y: y + 1 } }))
             arr.push({ x: x, y: y + 1 })
         if (y >= 5) {
-            if (可以落点(board, { from: { x, y }, to: { x: x - 1, y: y } }))
+            if (可以落点(board, { from, to: { x: x - 1, y: y } }))
                 arr.push({ x: x - 1, y: y })
-            if (可以落点(board, { from: { x, y }, to: { x: x + 1, y: y } }))
+            if (可以落点(board, { from, to: { x: x + 1, y: y } }))
                 arr.push({ x: x + 1, y: y })
         }
     }
@@ -347,15 +363,15 @@ export const 兵所有走法 = (board: number[][], x: number, y: number) => {
 }
 
 
-const forEach = (board: number[][], f: (id: number, x: number, y: number) => void) => {
+const forEach = (board: number[][], f: (id: number, coord: Coord) => void) => {
     for (let y = 0; y < board.length; y++) {
         for (let x = 0; x < board[y].length; x++) {
-            f(board[y][x], x, y)
+            f(board[y][x], { x, y })
         }
     }
 }
 
-const fDic: { [id: number]: (board: number[][], x: number, y: number) => { x: number, y: number }[] } = {
+const fDic: { [id: number]: (board: number[][], coord: Coord) => Coord[] } = {
     1: 车所有走法, 8: 车所有走法,
     2: 马所有走法, 9: 马所有走法,
     3: 相所有走法, 10: 相所有走法,
@@ -365,30 +381,36 @@ const fDic: { [id: number]: (board: number[][], x: number, y: number) => { x: nu
     7: 兵所有走法, 14: 兵所有走法
 }
 
-
-
-const step = (board: number[][], ft: FromTo) => {
-    let ret: number[][] = []
-    return ret
-}
-
 //黑方
-const maxMin = (board: number[][], depth: number) => {
+const getStep = (board: number[][], depth: number) => {
     let arr = all(board, 'black')
-    let boardArr = arr.map(v => step(board, v))
-    boardArr.forEach(v => maxMin(v, depth - 1)) //!!?
+    let ret = { ft: arr[0], v: 0 }
+
+    for (let i = 0; i < arr.length; i++) {
+        let ft = arr[i]
+        //改变board
+        let fromID = getID(board, ft.from)
+        let toID = getID(board, ft.to)
+        impureSetID(board, ft.from, 0)
+        impureSetID(board, ft.to, fromID)
+
+        //还原board
+        impureSetID(board, ft.from, fromID)
+        impureSetID(board, ft.to, toID)
+    }
+    return ret
 }
 
 
 //评价函数  黑方分数
 const evaluate = (board: number[][]) => {
     let ret = 0
-    forEach(board, (v, x, y) => {
+    forEach(board, (v, coord) => {
         if (isBlack(v)) {
-            ret += PRICE_TABLE[v][9 - y][x]//反转
+            ret += PRICE_TABLE[v][9 - coord.y][coord.x]//反转
         }
         if (isRed(v)) {
-            ret -= PRICE_TABLE[v - 7][y][x] //!!!!!!!!!
+            ret -= PRICE_TABLE[v - 7][coord.y][coord.x] //!!!!!!!!!
         }
     })
     return ret
@@ -397,13 +419,13 @@ const evaluate = (board: number[][]) => {
 //全部走法
 const all = (board: number[][], fx: 'red' | 'black') => {
     let arr: FromTo[] = []
-    forEach(board, (id, x, y) => {
+    forEach(board, (id, coord) => {
         if (fx == 'red' && isRed(id)) {
-            let a = fDic[id](board, x, y).map(v => ({ from: { x, y }, to: v }))
+            let a = fDic[id](board, coord).map(v => ({ from: coord, to: v }))
             arr.push(...a)
         }
         if (fx == 'black' && isBlack(id)) {
-            let a = fDic[id](board, x, y).map(v => ({ from: { x, y }, to: v }))
+            let a = fDic[id](board, coord).map(v => ({ from: coord, to: v }))
             arr.push(...a)
         }
     })

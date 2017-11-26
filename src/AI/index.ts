@@ -392,7 +392,7 @@ const fDic: { [id: number]: (board: number[][], coord: Coord) => Coord[] } = {
 export const getStep = (board: number[][], f: (ft: FromTo) => void) => {
     setTimeout(() => {
         f(maxMinSearch(board).ft)
-    }, 0);
+    }, 0)
 }
 
 //最大 最小 搜索  //黑方是电脑

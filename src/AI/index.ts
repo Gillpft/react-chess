@@ -123,7 +123,6 @@ export const startBoard = [
     [8, 9, 10, 11, 12, 11, 10, 9, 8]
 ]
 
-const isNone = (id: number) => id == 0
 const isRed = (id: number) => id != 0 && id >= 8
 const isBlack = (id: number) => id != 0 && id <= 7
 const getID = (board: number[][], coord: Coord) => board[coord.y][coord.x]
@@ -133,7 +132,7 @@ const impureSetID = (board: number[][], coord: Coord, id: number) => board[coord
 const checkRange = (coord: Coord) =>
     coord.x >= 0 && coord.x < 9 && coord.y >= 0 && coord.y < 10
 
-const check田 = (coord: Coord) =>
+const checkTian = (coord: Coord) =>
     (coord.x >= 3 && coord.x <= 5)
     &&
     ((coord.y >= 0 && coord.y <= 2) || (coord.y >= 7 && coord.y <= 9))
@@ -146,11 +145,11 @@ const diff = (board: number[][], ft: FromTo) => {
 }
 
 //结束点是空 或者是 对方棋子
-const 可以落点 = (board: number[][], ft: FromTo) =>
+const canFall = (board: number[][], ft: FromTo) =>
     checkRange(ft.to) && (getID(board, ft.to) == 0 || diff(board, ft))
 
 
-const 直走隔几个可以吃 = (n: number) => (board: number[][], from: Coord) => {
+const numInterval = (n: number) => (board: number[][], from: Coord) => {
     const { x, y } = from
     let arr: Coord[] = []
     //左
@@ -215,10 +214,14 @@ const 直走隔几个可以吃 = (n: number) => (board: number[][], from: Coord)
     return arr
 }
 
-const 车所有走法 = 直走隔几个可以吃(0)
-const 炮所有走法 = 直走隔几个可以吃(1)
+//车
+const waysFor1and8 = numInterval(0)
 
-export const 马所有走法 = (board: number[][], from: Coord) => {
+//炮
+const waysFor6and13 = numInterval(1)
+
+//马
+export const waysFor2and9 = (board: number[][], from: Coord) => {
 
     const table = [
         { over: [1, 2], only0: [0, 1] },
@@ -246,7 +249,7 @@ export const 马所有走法 = (board: number[][], from: Coord) => {
         if (
             (checkRange(only) && getID(board, only) == 0) //没有挡住
             &&
-            可以落点(board, { from, to })
+            canFall(board, { from, to })
         ) {
             arr.push(to)
         }
@@ -255,7 +258,8 @@ export const 马所有走法 = (board: number[][], from: Coord) => {
     return arr
 }
 
-export const 相所有走法 = (board: number[][], from: Coord) => {
+//相
+export const waysFor3and10 = (board: number[][], from: Coord) => {
     let arr: Coord[] = []
 
     const table = [
@@ -279,7 +283,7 @@ export const 相所有走法 = (board: number[][], from: Coord) => {
             if (
                 (checkRange(only) && getID(board, only) == 0) //没有挡住
                 &&
-                可以落点(board, { from, to }) //结束点是空 或者是 对方棋子
+                canFall(board, { from, to }) //结束点是空 或者是 对方棋子
             ) {
                 arr.push(to)
             }
@@ -288,7 +292,8 @@ export const 相所有走法 = (board: number[][], from: Coord) => {
     return arr
 }
 
-export const 士所有走法 = (board: number[][], from: Coord) => {
+//士
+export const waysFor4and11 = (board: number[][], from: Coord) => {
     let arr: Coord[] = []
 
     const table = [
@@ -304,7 +309,7 @@ export const 士所有走法 = (board: number[][], from: Coord) => {
             y: from.y + table[i].over[1]
         }
 
-        if (check田(to) && 可以落点(board, { from, to })) {
+        if (checkTian(to) && canFall(board, { from, to })) {
             arr.push(to)
         }
 
@@ -313,7 +318,8 @@ export const 士所有走法 = (board: number[][], from: Coord) => {
     return arr
 }
 
-export const 将所有走法 = (board: number[][], from: Coord) => {
+//将
+export const waysFor5and12 = (board: number[][], from: Coord) => {
     let arr: Coord[] = []
 
     const table = [
@@ -329,40 +335,40 @@ export const 将所有走法 = (board: number[][], from: Coord) => {
             y: from.y + table[i].over[1]
         }
 
-        if (check田(to) && 可以落点(board, { from, to })) {
+        if (checkTian(to) && canFall(board, { from, to })) {
             arr.push(to)
         }
     }
     return arr
 }
 
-
-export const 兵所有走法 = (board: number[][], from: Coord) => {
+//兵
+export const waysFor7and14 = (board: number[][], from: Coord) => {
     const { x, y } = from
     let arr: Coord[] = []
     if (board[y][x] == 14) {//红
-        if (可以落点(board, { from, to: { x, y: y - 1 } }))
+        if (canFall(board, { from, to: { x, y: y - 1 } }))
             arr.push({ x: x, y: y - 1 })
         if (y <= 4) {
-            if (可以落点(board, { from, to: { x: x - 1, y: y } }))
+            if (canFall(board, { from, to: { x: x - 1, y: y } }))
                 arr.push({ x: x - 1, y: y })
-            if (可以落点(board, { from, to: { x: x + 1, y: y } }))
+            if (canFall(board, { from, to: { x: x + 1, y: y } }))
                 arr.push({ x: x + 1, y: y })
         }
     } else {
-        if (可以落点(board, { from, to: { x: x, y: y + 1 } }))
+        if (canFall(board, { from, to: { x: x, y: y + 1 } }))
             arr.push({ x: x, y: y + 1 })
         if (y >= 5) {
-            if (可以落点(board, { from, to: { x: x - 1, y: y } }))
+            if (canFall(board, { from, to: { x: x - 1, y: y } }))
                 arr.push({ x: x - 1, y: y })
-            if (可以落点(board, { from, to: { x: x + 1, y: y } }))
+            if (canFall(board, { from, to: { x: x + 1, y: y } }))
                 arr.push({ x: x + 1, y: y })
         }
     }
     return arr
 }
 
-
+//遍历
 const forEach = (board: number[][], f: (id: number, coord: Coord) => void) => {
     for (let y = 0; y < board.length; y++) {
         for (let x = 0; x < board[y].length; x++) {
@@ -371,30 +377,32 @@ const forEach = (board: number[][], f: (id: number, coord: Coord) => void) => {
     }
 }
 
+//规则字典
 const fDic: { [id: number]: (board: number[][], coord: Coord) => Coord[] } = {
-    1: 车所有走法, 8: 车所有走法,
-    2: 马所有走法, 9: 马所有走法,
-    3: 相所有走法, 10: 相所有走法,
-    4: 士所有走法, 11: 士所有走法,
-    5: 将所有走法, 12: 将所有走法,
-    6: 炮所有走法, 13: 炮所有走法,
-    7: 兵所有走法, 14: 兵所有走法
+    1: waysFor1and8, 8: waysFor1and8,
+    2: waysFor2and9, 9: waysFor2and9,
+    3: waysFor3and10, 10: waysFor3and10,
+    4: waysFor4and11, 11: waysFor4and11,
+    5: waysFor5and12, 12: waysFor5and12,
+    6: waysFor6and13, 13: waysFor6and13,
+    7: waysFor7and14, 14: waysFor7and14
 }
 
 //黑方
 export const getStep = (board: number[][], f: (ft: FromTo) => void) => {
     setTimeout(() => {
-        f(getStep2(board).ft)
+        f(maxMinSearch(board).ft)
     }, 0);
 }
 
-const getStep2 = (board: number[][], depth = 1) => {
+//最大 最小 搜索  //黑方是电脑
+const maxMinSearch = (board: number[][], depth = 1) => {
     if (depth == 5) {
         return { ft: {} as FromTo, v: evaluate(board) }
     }
     let isBlack = depth % 2 == 1
     let arr = all(board, isBlack ? 'black' : 'red')
-    let ret = { ft: arr[0], v: isBlack ? -Infinity : Infinity }
+    let ret = { ft: arr[0], v: isBlack ? -999999 : 999999 }
 
     for (let i = 0; i < arr.length; i++) {
         let ft = arr[i]
@@ -405,7 +413,7 @@ const getStep2 = (board: number[][], depth = 1) => {
         impureSetID(board, ft.from, 0)
         impureSetID(board, ft.to, fromID)
 
-        let xxx = getStep2(board, depth + 1)
+        let xxx = maxMinSearch(board, depth + 1)
         if (isBlack && ret.v < xxx.v) {
             //max
             ret.v = xxx.v
@@ -427,12 +435,12 @@ const getStep2 = (board: number[][], depth = 1) => {
 //评价函数  黑方分数
 const evaluate = (board: number[][]) => {
     let ret = 0
-    forEach(board, (v, coord) => {
-        if (isBlack(v)) {
-            ret += PRICE_TABLE[v][9 - coord.y][coord.x]//反转
+    forEach(board, (id, coord) => {
+        if (isBlack(id)) {
+            ret += PRICE_TABLE[id][9 - coord.y][coord.x]//反转
         }
-        if (isRed(v)) {
-            ret -= PRICE_TABLE[v - 7][coord.y][coord.x] //!!!!!!!!!
+        if (isRed(id)) {
+            ret -= PRICE_TABLE[id - 7][coord.y][coord.x] //!!!!!!!!!
         }
     })
     return ret
@@ -454,5 +462,5 @@ const all = (board: number[][], fx: 'red' | 'black') => {
     return arr
 }
 
-export const 可以走 = (board: number[][], x1: number, y1: number, x2: number, y2: number) =>
+export const moveRule = (board: number[][], x1: number, y1: number, x2: number, y2: number) =>
     all(board, 'red').find(v => v.from.x == x1 && v.from.y == y1 && v.to.x == x2 && v.to.y == y2) != null

@@ -1,7 +1,7 @@
 .gameStartBoard{
     display: flex;
     flex-direction: column;
-    justify-content: space-around;
+    justify-content: center;
     align-items: center;
     float: left;
     height: 100%;
@@ -16,4 +16,5 @@
 
 .checkerboardImg{
     box-shadow: 0 0 100px white;
+    position: absolute;
 }

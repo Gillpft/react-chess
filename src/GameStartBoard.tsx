@@ -4,15 +4,15 @@ import { Button } from './Button'
 import { Chessman } from './Chessman'
 
 import './GameStartBoard.css'
-import { startBoard, chessmanTable, 可以走, getStep } from './AI'
+import { startBoard, chessmanTable, moveRule, getStep } from './AI'
 
 const S = {
   board: startBoard,
-  点击的棋子的ID: 0,
-  点击的棋子的x: -1,
-  点击的棋子的y: -1,
-  黑色的棋子的x: -1,
-  黑色的棋子的y: -1
+  redChessmanID: 0,
+  redChessmanX: -1,
+  redChessmanY: -1,
+  blackChessmanX: -1,
+  blackChessmanY: -1
 }
 
 export class GameStartBoard extends React.Component<{}, typeof S> {
@@ -24,23 +24,25 @@ export class GameStartBoard extends React.Component<{}, typeof S> {
   onClick(id: number, x: number, y: number) {
     if (id > 7) {
       this.setState({
-        点击的棋子的ID: id,
-        点击的棋子的x: x,
-        点击的棋子的y: y,
-        黑色的棋子的x: -1,
-        黑色的棋子的y: -1,
+        redChessmanID: id,
+        redChessmanX: x,
+        redChessmanY: y,
+        blackChessmanX: -1,
+        blackChessmanY: -1,
       })
-    } else if (this.state.点击的棋子的ID != 0) {
+    } else if (this.state.redChessmanID != 0) {
 
-      let b = 可以走(this.state.board, this.state.点击的棋子的x, this.state.点击的棋子的y, x, y)
+      let b = moveRule(this.state.board, this.state.redChessmanX, this.state.redChessmanY, x, y)
       if (b) {
-        this.state.board[this.state.点击的棋子的y][this.state.点击的棋子的x] = 0
-        this.state.board[y][x] = this.state.点击的棋子的ID
+        this.state.board[this.state.redChessmanY][this.state.redChessmanX] = 0
+        this.state.board[y][x] = this.state.redChessmanID
 
         this.setState({
-          点击的棋子的ID: 0,
-          点击的棋子的x: -1,
-          点击的棋子的y: -1,
+          redChessmanID: 0,
+          redChessmanX: -1,
+          redChessmanY: -1,
+          blackChessmanX: -1,
+          blackChessmanY: -1
         })
 
         getStep(this.state.board, ft => {
@@ -49,11 +51,11 @@ export class GameStartBoard extends React.Component<{}, typeof S> {
           this.state.board[ft.to.y][ft.to.x] = fID
 
           this.setState({
-            点击的棋子的ID: 0,
-            点击的棋子的x: -1,
-            点击的棋子的y: -1,
-            黑色的棋子的x: ft.to.x,
-            黑色的棋子的y: ft.to.y,
+            redChessmanID: 0,
+            redChessmanX: -1,
+            redChessmanY: -1,
+            blackChessmanX: ft.to.x,
+            blackChessmanY: ft.to.y,
           })
         })
 
@@ -65,17 +67,16 @@ export class GameStartBoard extends React.Component<{}, typeof S> {
 
   render() {
     return <div className='gameStartBoard'>
-      <div>
         <div className='checkerboard'>
           <img className='checkerboardImg' src='Checkerboard.png'></img>
           {this.state.board.map((V, y) => {
             return V.map((v, x) => {
               return v ?
                 <Chessman
-                  high={(x == this.state.点击的棋子的x && y == this.state.点击的棋子的y) || (x == this.state.黑色的棋子的x && y == this.state.黑色的棋子的y)}
+                  high={(x == this.state.redChessmanX && y == this.state.redChessmanY) || (x == this.state.blackChessmanX && y == this.state.blackChessmanY)}
                   key={x.toString() + '.' + y.toString()}
                   x={x * 59 + 10}
-                  y={y * 53 + 9}
+                  y={y * 58 + 9}
                   color={chessmanTable[v].color}
                   name={chessmanTable[v].name}
                   onClick={() => this.onClick(v, x, y)} />
@@ -83,12 +84,11 @@ export class GameStartBoard extends React.Component<{}, typeof S> {
                   high={false}
                   key={x.toString() + '.' + y.toString()}
                   x={x * 59 + 10}
-                  y={y * 53 + 9}
+                  y={y * 58 + 9}
                   onClick={() => this.onClick(v, x, y)} />
             })
           })}
         </div>
       </div>
-    </div>
   }
 }

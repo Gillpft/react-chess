@@ -96,7 +96,6 @@ export const chessmanTable: { [id: number]: { name: string, color: string } } = 
     6: { name: '炮', color: 'black' },
     7: { name: '卒', color: 'black' },
 
-
     8: { name: '車', color: 'red' },
     9: { name: '馬', color: 'red' },
     10: { name: '相', color: 'red' },
@@ -123,25 +122,23 @@ export const startBoard = [
 
 
 //检查是否超出范围
-const checkRange = (x: number, y: number) => x >= 0 && x < 9 && y >= 0 && y < 10
+const checkRange = (x: number, y: number) =>
+    x >= 0 && x < 9 && y >= 0 && y < 10
 
 const check田 = (x: number, y: number) =>
-    (x >= 3 && x <= 5)
-    &&
-    ((y >= 0 && y <= 2) || (y >= 7 && y <= 9))
+    (x >= 3 && x <= 5) && ((y >= 0 && y <= 2) || (y >= 7 && y <= 9))
 
-//不同的玩家棋子
+//对方棋子
 const diff = (board: number[][], x1: number, y1: number, x2: number, y2: number) => {
     const id1 = board[y1][x1]
     const id2 = board[y2][x2]
     return id1 != 0 && id2 != 0 && ((id2 >= 8 && id1 <= 7) || (id1 >= 8 && id2 <= 7))
 }
 
-//
-const 可以落点 = (board: number[][], x1: number, y1: number, x2: number, y2: number) => {
-    return checkRange(x2, y2) &&
-        (board[y2][x2] == 0 || diff(board, x1, y1, x2, y2)) //结束点是空 或者是 对方棋子
-}
+//结束点是空 或者是 对方棋子
+const 可以落点 = (board: number[][], x1: number, y1: number, x2: number, y2: number) =>
+    checkRange(x2, y2) && (board[y2][x2] == 0 || diff(board, x1, y1, x2, y2))
+
 
 const 直走隔几个可以吃 = (n: number) => (board: number[][], x: number, y: number) => {
     let arr: { x: number, y: number }[] = []
@@ -269,7 +266,6 @@ export const 相所有走法 = (board: number[][], x: number, y: number) => {
             }
         }
     }
-
     return arr
 }
 
@@ -287,11 +283,7 @@ export const 士所有走法 = (board: number[][], x: number, y: number) => {
         const overX = x + table[i].over[0]
         const overY = y + table[i].over[1]
 
-        if (
-            check田(overX, overY)
-            &&
-            可以落点(board, x, y, overX, overY)//结束点是空或者对方棋子
-        ) {
+        if (check田(overX, overY) && 可以落点(board, x, y, overX, overY)) {
             arr.push({ x: overX, y: overY })
         }
 
@@ -314,11 +306,7 @@ export const 将所有走法 = (board: number[][], x: number, y: number) => {
         const overX = x + table[i].over[0]
         const overY = y + table[i].over[1]
 
-        if (
-            check田(overX, overY)
-            &&
-            (board[overY][overX] == 0 || diff(board, x, y, overX, overY))//结束点是空或者对方棋子
-        ) {
+        if (check田(overX, overY) && (board[overY][overX] == 0 || diff(board, x, y, overX, overY))) {
             arr.push({ x: overX, y: overY })
         }
 
@@ -352,36 +340,40 @@ export const 兵所有走法 = (board: number[][], x: number, y: number) => {
     return arr
 }
 
-//传过来的 x1 y1 x2 y2 不会相等   不会超出范围
-export const 棋子规则 = (board: number[][], x1: number, y1: number, x2: number, y2: number) => {
 
-    //起始 结束 id
-    const id1 = board[y1][x1]
-    const id2 = board[y2][x2]
-
-    //结束点必须是空 或者是别人的棋子
-    if (id2 == 0 || diff(board, x1, y1, x2, y2)) {
-        if (id1 == 1 || id1 == 8) {
-            return 车所有走法(board, x1, y1).find(v => v.x == x2 && v.y == y2) != null
-        }
-        else if (id1 == 2 || id1 == 9) {
-            return 马所有走法(board, x1, y1).find(v => v.x == x2 && v.y == y2) != null
-        }
-        else if (id1 == 3 || id1 == 10) {
-            return 相所有走法(board, x1, y1).find(v => v.x == x2 && v.y == y2) != null
-        }
-        else if (id1 == 4 || id1 == 11) {
-            return 士所有走法(board, x1, y1).find(v => v.x == x2 && v.y == y2) != null
-        }
-        else if (id1 == 5 || id1 == 12) {
-            return 将所有走法(board, x1, y1).find(v => v.x == x2 && v.y == y2) != null
-        }
-        else if (id1 == 6 || id1 == 13) {
-            return 炮所有走法(board, x1, y1).find(v => v.x == x2 && v.y == y2) != null
-        }
-        else if (id1 == 7 || id1 == 14) {
-            return 兵所有走法(board, x1, y1).find(v => v.x == x2 && v.y == y2) != null
+const forEach = (board: number[][], f: (v: number, x: number, y: number) => void) => {
+    for (let y = 0; y < board.length; y++) {
+        for (let x = 0; x < board[y].length; x++) {
+            f(board[y][x], x, y)
         }
     }
-    return false
 }
+
+const fDic: { [id: number]: (board: number[][], x: number, y: number) => { x: number, y: number }[] } = {
+    1: 车所有走法, 8: 车所有走法,
+    2: 马所有走法, 9: 马所有走法,
+    3: 相所有走法, 10: 相所有走法,
+    4: 士所有走法, 11: 士所有走法,
+    5: 将所有走法, 12: 将所有走法,
+    6: 炮所有走法, 13: 炮所有走法,
+    7: 兵所有走法, 14: 兵所有走法
+}
+
+//全部走法
+const all = (board: number[][], fx: 'red' | 'black') => {
+    let arr: { x1: number, y1: number, x2: number, y2: number }[] = []
+    forEach(board, (v, x, y) => {
+        if (fx == 'red' && v >= 8) {
+            let a = fDic[v](board, x, y).map(v => ({ x1: x, y1: y, x2: v.x, y2: v.y }))
+            arr.push(...a)
+        }
+        if (fx == 'black' && v <= 7) {
+            let a = fDic[v](board, x, y).map(v => ({ x1: x, y1: y, x2: v.x, y2: v.y }))
+            arr.push(...a)
+        }
+    })
+    return arr
+}
+
+export const 棋子规则 = (board: number[][], x1: number, y1: number, x2: number, y2: number) =>
+    all(board, 'red').find(v => v.x1 == x1 && v.y1 == y1 && v.x2 == x2 && v.y2 == y2) != null

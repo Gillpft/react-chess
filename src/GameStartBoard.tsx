@@ -1,6 +1,5 @@
 import * as React from 'react';
 
-import { Button } from './Button'
 import { Chessman } from './Chessman'
 
 import './GameStartBoard.css'
@@ -56,12 +55,7 @@ export class GameStartBoard extends React.Component<{}, typeof S> {
             blackChessmanY: ft.to.y,
           })
         }))
-
-
-
-
       }
-
     }
   }
 
